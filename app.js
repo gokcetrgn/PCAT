@@ -9,6 +9,13 @@ app.set('view engine', 'ejs');
 // MIDDLEWARE
 app.use(express.static('public'));
 
+app.get('/addphoto', (req, res) => {
+  res.render('addphoto');
+});
+app.get('/about', (req, res) => {
+  res.render('about');
+});
+
 app.get('/', (req, res) => {
   res.render('index');
 });
