@@ -21,16 +21,17 @@ app.use(express.json());
 app.get('/addphoto', (req, res) => {
   res.render('addphoto');
 });
-app.post('/photos', (req, res) => {
-  Photo.create(req.body);
+app.post('/photos', async (req, res) => {
+  await Photo.create(req.body);
   res.redirect('/');
 });
 app.get('/about', (req, res) => {
   res.render('about');
 });
 
-app.get('/', (req, res) => {
-  res.render('index');
+app.get('/', async (req, res) => {
+  const photos = await Photo.find({});
+  res.render('index', { photos });
 });
 
 // Portta baslatmak
