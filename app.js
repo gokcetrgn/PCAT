@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const ejs = require('ejs');
 const fs = require('fs');
 const fileUpload = require('express-fileupload');
+const methodOverride = require('method-override');
 const app = express();
 const Photo = require('./models/Photo');
 
@@ -16,6 +17,11 @@ mongoose.connect('mongodb://localhost/pcat-test-db', {
 app.set('view engine', 'ejs');
 
 // MIDDLEWARE
+app.use(
+  methodOverride('_method', {
+    methods: ['POST', 'GET'],
+  })
+);
 app.use(fileUpload());
 app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
@@ -61,6 +67,22 @@ app.get('/', async (req, res) => {
   res.render('index', { photos });
 });
 
+app.put('/photos/:id', async (req, res) => {
+  const photo = await Photo.findOne({ _id: req.params.id });
+  photo.title = req.body.title;
+  photo.description = req.body.description;
+  photo.save();
+
+  res.redirect(`/photos/${req.params.id}`);
+});
+
+app.delete('/photos/:id', async (req, res) => {
+  const photo = await Photo.findOne({ _id: req.params.id });
+  let deletedImage = __dirname + '/public' + photo.image;
+  fs.unlinkSync(deletedImage);
+  await Photo.findByIdAndDelete(req.params.id);
+  res.redirect('/');
+});
 // Portta baslatmak
 const port = 3000;
 app.listen(port, () => {
