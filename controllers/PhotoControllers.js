@@ -1,4 +1,5 @@
 const Photo = require('../models/Photo');
+const fs = require('fs');
 
 exports.getAllPhotos = async (req, res) => {
   const photos = await Photo.find({}).sort({ dateCreated: -1 });
@@ -17,7 +18,7 @@ exports.createPhoto = async (req, res) => {
     fs.mkdirSync(uploadDir);
   }
   let uploadImage = req.files.image;
-  let uploadPath = __dirname + '/public/uploads/' + uploadImage.name;
+  let uploadPath = __dirname + '/../public/uploads/' + uploadImage.name;
 
   uploadImage.mv(uploadPath, async () => {
     await Photo.create({
@@ -41,7 +42,7 @@ exports.updatePhoto = async (req, res) => {
 
 exports.deletePhoto = async (req, res) => {
   const photo = await Photo.findOne({ _id: req.params.id });
-  let deletedImage = __dirname + '/public' + photo.image;
+  let deletedImage = __dirname + '/../public' + photo.image;
   fs.unlinkSync(deletedImage);
   await Photo.findByIdAndDelete(req.params.id);
   res.redirect('/');
